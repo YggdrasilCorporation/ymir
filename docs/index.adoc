@@ -1,0 +1,173 @@
+[TOC]
+
+= インフラストラクチャアーキテクチャ
+
+== 目的
+インフラストラクチャ設計および開発の指針を提示します。
+
+インフラストラクチャアーキテクチャ全体概要を理解するためのポータル的な位置づけのガイドです。
+
+このガイドを起点に各々の詳細ガイドを参照してください。
+
+== 前提
+* 対象者は、インフラ設計者・開発者です。
+
+== 構成
+* <<anchor-1,全体概要>>
+* <<anchor-2,共通設計指針>>
+* <<anchor-3,実装指針>>
+* <<anchor-4,実装>>
+
+== 詳細
+=== 全体概要[[anchor-1]]
+==== 全体像
+===== 開発環境
+[plantuml, images/development, png]
+....
+HTTP -- port_3000
+HTTP -- port_3306
+node "Vagrant VM" {
+port_3000 -- port_forward_3000
+port_3306 -- port_forward_3306
+
+        package "Application Service" {
+          [Rails] as app
+          [MySQL] as app_db
+          app -> app_db
+          port_forward_3000 - app
+          port_forward_3306 - app_db
+
+          database "MySQL Application" {
+            frame "app_db" {
+               [app_development]
+            }
+          }
+    }
+}
+
+cloud "GitHub"{
+  [Git] as repository_1
+  repository_1 --> app
+}
+....
+===== ステージング環境
+[plantuml, images/staging, png]
+....
+HTTP -- port_80
+HTTPS -- port_443
+cloud "Amazon Web Service" {
+
+ folder "OpsWOrks" {
+   package "BusinessApplicationService" {
+     folder "EC2 Instance" {
+          [Rails] as app
+          [Nginx] as proxy
+          [Hcoss] as app_staging
+          proxy --> app
+          app -> app_staging
+          port_80 - proxy
+          port_443 - proxy
+     }
+   }
+   package "ContinuousIntegrationService" {
+   }
+   package "LoggingService" {
+   }
+   package "MonitoringService" {
+   }
+   package "RDS" {
+    database "Hcoss" {
+      frame "app_staging" {
+    }
+   }
+  }
+ }
+
+ folder "S3" {
+   storage S3Backet as ops_source
+   ops_source --> BusinessApplicationService
+   ops_source --> ContinuousIntegrationService
+   ops_source --> LoggingService
+   ops_source --> MonitoringService
+ }
+}
+
+cloud "GitHub"{
+  [Git] as repository_1
+  repository_1 --> app
+}
+....
+
+===== プロダクション環境
+[plantuml, images/production, png]
+....
+HTTP -- port_80
+HTTPS -- port_443
+cloud "Amazon Web Service" {
+
+ folder "OpsWOrks"{
+   package "ELB"{
+     [Elastic_load_balancer] as elb
+     port_80 -- elb
+     port_443 -- elb
+
+     package "BusinessApplicationService" {
+       folder "EC2 Instance" {
+          [Rails] as app
+          [Nginx] as proxy
+          [Hcoss] as app_production
+          proxy --> app
+          app -> app_production
+          elb -> proxy
+       }
+     }
+   }
+   package "ContinuousIntegrationService" {
+   }
+   package "LoggingService" {
+   }
+   package "MonitoringService" {
+   }
+   package "RDS" {
+    database "Hcoss" {
+      frame "app_production" {
+    }
+   }
+  }
+ }
+
+ folder "S3" {
+   storage S3Backet as ops_source
+   ops_source --> BusinessApplicationService
+   ops_source --> ContinuousIntegrationService
+   ops_source --> LoggingService
+   ops_source --> MonitoringService
+ }
+}
+
+cloud "GitHub"{
+  [hcoss_dev] as repository_1
+  repository_1 --> app
+}
+....
+
+=== 共通設計指針[[anchor-2]]
+==== 構築
+==== 開発
+==== 運用
+
+=== 実装指針[[anchor-3]]
+環境ごとの環境変数の内容は以下を参照
+
+* 開発環境
+* ステージング環境
+* プロダクション環境
+
+=== 実装[[anchor-4]]
+==== 開発環境
+==== ステージング環境
+==== プロダクション環境
+
+== 参照
+* Asciidoctor[http://asciidoctor.org/]
+* PlantUML[http://www.plantuml.com]
