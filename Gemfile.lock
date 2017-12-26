@@ -1,3 +1,10 @@
+GIT
+  remote: https://github.com/k2works/etude_for_ops.git
+  revision: 0211d8aea0549d5a65c8feb325d622213790100b
+  branch: feature/aws_ruby_staging
+  specs:
+    etude_for_ops (0.2.0)
+
 PATH
   remote: .
   specs:
@@ -9,7 +16,20 @@ GEM
     asciidoctor (1.5.6.1)
     asciidoctor-diagram (1.5.6)
       asciidoctor (~> 1.5.0)
+    aws-sdk (2.10.109)
+      aws-sdk-resources (= 2.10.109)
+    aws-sdk-core (2.10.109)
+      aws-sigv4 (~> 1.0)
+      jmespath (~> 1.0)
+    aws-sdk-resources (2.10.109)
+      aws-sdk-core (= 2.10.109)
+    aws-sigv4 (1.0.2)
     diff-lcs (1.3)
+    dotenv (2.2.1)
+    etude_for_aws (0.7.10)
+      aws-sdk (~> 2.9)
+      dotenv
+    jmespath (1.3.1)
     rake (10.5.0)
     rspec (3.7.0)
       rspec-core (~> 3.7.0)
@@ -33,6 +53,8 @@ DEPENDENCIES
   asciidoctor
   asciidoctor-diagram
   bundler (~> 1.16)
+  etude_for_aws (~> 0.7.10)
+  etude_for_ops!
   rake (~> 10.0)
   rspec (~> 3.0)
   yard

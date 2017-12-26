@@ -12,3 +12,5 @@
 .idea
 /vendor
 docs/.asciidoctor
+ops
+.env

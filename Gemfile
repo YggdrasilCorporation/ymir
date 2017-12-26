@@ -10,3 +10,8 @@ group :doc do
   gem 'asciidoctor'
   gem 'asciidoctor-diagram'
 end
+
+group :development do
+  gem 'etude_for_aws', '~> 0.7.10'
+  gem 'etude_for_ops', git: 'https://github.com/k2works/etude_for_ops.git', branch: 'feature/aws_ruby_staging'
+end
